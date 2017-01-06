@@ -4,7 +4,8 @@ const express = require('express');
 const socketIO = require('socket.io');
 
 const publicPath = path.join(__dirname, '../public');
-const {generateMessage} = require('./utils/message.js');
+const {generateMessage,generateLocationMessage} = require('./utils/message.js');
+
 
 const app = new express();
 var server = http.createServer(app);
@@ -24,18 +25,11 @@ io.on('connection',function (socket){
 		console.log('create message: ',message);
 		io.emit('newMessage',generateMessage(message.from,message.text));
 		callback('This is from the server');
+	})
 
-		// io.emit('newMessage',{
-		// 	from: message.from,
-		// 	text: message.text,
-		// 	createdAt: new Date().getTime()
-		// })
-
-		// socket.broadcast.emit('newMessage',{
-		// 	from: message.from,
-		// 	text: message.text,
-		//  	createdAt: new Date().getTime()
-		// })
+	socket.on('createLocationMessage',(coords)=>{
+		console.log(coords);
+		io.emit('newLocationMessage',generateLocationMessage('GoogleMap',coords.latitude,coords.longitude));
 	})
 
 
