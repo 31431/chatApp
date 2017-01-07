@@ -14,22 +14,27 @@ socket.on('disconnect',function(){
 });
 
 socket.on('newMessage',function(newMessage){
-	console.log('newMessage', newMessage)
+	var template = jQuery('#message-template').html();
 	var formattedTime = moment(newMessage.createdAt).format('h:mm a');
-	var li = jQuery('<li></li>');
-	li.text(`${newMessage.from} ${formattedTime}: ${newMessage.text}`);
-	jQuery('#messages').append(li);
+	var html = Mustache.render(template,{
+		from: newMessage.from,
+		text: newMessage.text,
+		createdAt: formattedTime
+	});
+
+	jQuery('#messages').append(html);
 });
 
 socket.on('newLocationMessage',function(newMessage){
-	console.log(newMessage);
+	var template = jQuery('#location-template').html();
 	var formattedTime = moment(newMessage.createdAt).format('h:mm a');
-	var li = jQuery('<li></li>');
-	var a = jQuery('<a target="_blank">My Current Location</a>');
-	li.text(`${newMessage.from} ${formattedTime}: `);
-	a.attr('href',newMessage.url);
-	li.append(a);
-	jQuery('#messages').append(li);
+	var html = Mustache.render(template,{
+		from: newMessage.from,
+		url: newMessage.url,
+		createdAt: formattedTime	
+	})
+
+	jQuery('#messages').append(html);
 })
 
 socket.emit('createMessage',{
